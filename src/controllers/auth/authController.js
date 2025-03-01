@@ -1,19 +1,29 @@
 import admin from "../../config/firebase.js"
-import user from "../../models/auth/userModel.js"
+import createUser from "../../models/auth/userModel.js"
 
-const register = async(req,res) =>{
+const register = async (req, res) => {
     try {
-        const {idUser, email, password} = req.body;
-        const userRecord = await admin.auth().user({
-            idUser,
-            email,
-            password,
-            displayName: email
-        })
-        const userData = await user(userRecord.idUser,email,password)
-        res.status(201).json({message: "Create account successful!",user: userData})
+        const { userName, email, password } = req.body;
+        const userRecord = await admin.auth().createUser({
+            email: email,
+            password: password,
+            displayName: userName
+        });
+        await createUser(userName, userRecord.uid, email, password);
+        res.status(201).json({
+            message: "Create account successful!",
+            user: {
+                uid: userRecord.uid,
+                email: email,
+                userName: userName
+            }
+        });
     } catch (error) {
-        res.status(400).json({error: error.message})
+        console.error('Error creating user:', error);
+        res.status(400).json({
+            error: error.message || 'Failed to create user'
+        });
     } 
 }
+
 export default register
