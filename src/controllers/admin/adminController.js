@@ -222,7 +222,14 @@ const assignShipper = async (req, res) => {
             });
         }
 
-        await orderRef.update({ shipperId: shipperId });
+        await orderRef.update({ 
+            shipperId: shipperId,
+            shipperLocation: {
+                latitude: 15.9753,
+                longitude:  108.2532,
+                updatedAt: new Date().toISOString()
+            }
+        });
         res.status(200).json({
             message: 'Shipper assigned successfully'
         });

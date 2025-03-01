@@ -75,4 +75,61 @@ const getCustomerOrderDetails = async (req, res) => {
     }
 };
 
-export { getCustomerOrders, getCustomerOrderDetails };
+// Lấy vị trí shipper của đơn hàng
+const getShipperLocation = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        // Lấy thông tin đơn hàng
+        const orderRef = db.ref(`orders/${orderId}`);
+        const snapshot = await orderRef.once('value');
+        const orderData = snapshot.val();
+        if (!orderData) {
+            return res.status(404).json({
+                error: 'Không tìm thấy đơn hàng'
+            });
+        }
+
+        // Kiểm tra xem đơn hàng đã được phân công cho shipper chưa
+        if (!orderData.shipperId) {
+            return res.status(404).json({
+                error: 'Đơn hàng chưa được phân công cho shipper'
+            });
+        }
+
+        // Lấy ETag từ request header
+        const clientETag = req.headers['if-none-match'];
+        
+        // Tạo ETag từ dữ liệu vị trí hiện tại
+        const currentETag = orderData.shipperLocation ? 
+            Buffer.from(JSON.stringify(orderData.shipperLocation)).toString('base64') : 
+            'no-location';
+        
+        
+        // So sánh ETag
+        if (clientETag === currentETag) {
+            return res.status(304).end();
+        }
+
+        // Kiểm tra xem có thông tin vị trí shipper không
+        if (!orderData.shipperLocation || !orderData.shipperLocation.latitude || !orderData.shipperLocation.longitude) {
+            res.setHeader('ETag', currentETag);
+            return res.status(200).json({
+                shipperLocation: null,
+                message: 'Chưa có thông tin vị trí shipper'
+            });
+        }
+
+        // Trả về vị trí mới với ETag
+        res.setHeader('ETag', currentETag);
+        res.status(200).json({
+            shipperLocation: orderData.shipperLocation
+        });
+    } catch (error) {
+        console.error('Error getting shipper location:', error);
+        res.status(500).json({
+            error: error.message || 'Không thể lấy vị trí shipper'
+        });
+    }
+};
+
+export { getCustomerOrders, getCustomerOrderDetails, getShipperLocation };

@@ -1,5 +1,54 @@
 import { db } from '../../config/firebase.js';
 
+// Cập nhật vị trí của shipper cho một đơn hàng
+const updateShipperLocation = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { latitude, longitude } = req.body;
+
+        if (!latitude || !longitude) {
+            return res.status(400).json({
+                error: 'Vui lòng cung cấp vị trí (latitude và longitude)'
+            });
+        }
+
+        const orderRef = db.ref(`orders/${orderId}`);
+        const snapshot = await orderRef.once('value');
+        const orderData = snapshot.val();
+
+        if (!orderData) {
+            return res.status(404).json({
+                error: 'Không tìm thấy đơn hàng'
+            });
+        }
+
+        // Kiểm tra xem shipper có được phân công cho đơn hàng này không
+        if (Number(orderData.shipperId) !== Number(req.user.idUser)) {
+            return res.status(403).json({
+                error: 'Bạn không được phân công cho đơn hàng này'
+            });
+        }
+
+        // Cập nhật vị trí shipper
+        await orderRef.update({
+            shipperLocation: {
+                latitude,
+                longitude,
+                updatedAt: Date.now()
+            }
+        });
+
+        res.status(200).json({
+            message: 'Đã cập nhật vị trí thành công'
+        });
+    } catch (error) {
+        console.error('Error updating shipper location:', error);
+        res.status(500).json({
+            error: error.message || 'Không thể cập nhật vị trí'
+        });
+    }
+};
+
 // Lấy danh sách đơn hàng được phân công cho shipper
 const getAssignedOrders = async (req, res) => {
     try {
@@ -151,4 +200,4 @@ const getOrderDetails = async (req, res) => {
     }
 };
 
-export { getAssignedOrders, updateOrderStatus, getOrderDetails };
+export { getAssignedOrders, updateOrderStatus, getOrderDetails, updateShipperLocation };
