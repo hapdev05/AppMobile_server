@@ -1,8 +1,15 @@
-import express from "express";
-import register from "../../controllers/auth/authController.js";
+import express from 'express';
+import authController from '../../controllers/auth/authController.js';
+import { checkAdmin } from '../../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post("/register", register);
+// Auth routes
+router.post('/register', authController.register);
+router.post('/login', authController.login);
 
-export default router
+// Admin routes
+router.get('/users', checkAdmin, authController.getAllUsers);
+router.put('/user/role', checkAdmin, authController.updateUserRole);
+
+export default router;
