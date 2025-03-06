@@ -1,5 +1,10 @@
 import admin from "../../config/firebase.js"
 import userModel from "../../models/auth/userModel.js"
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+
+// Cấu hình dotenv
+dotenv.config();
 
 const register = async (req, res) => {
     try {
@@ -35,14 +40,32 @@ const login = async (req, res) => {
     }
     try {
         const userLogin = await userModel.loginUser.findByUsernameAndPassword(userName, password);
+        
+        // Tạo JWT token
+        const token = jwt.sign(
+            { 
+                userId: userLogin.idUser,
+                email: userLogin.email,
+                role: userLogin.role 
+            },
+            process.env.JWT_SECRET, // Sử dụng JWT_SECRET từ biến môi trường
+            { expiresIn: '24h' }
+        );
+        
         res.status(200).json({
             message: "Login successful!",
-            user: userLogin
+            token: token,
+            user: {
+                idUser: userLogin.idUser,
+                userName: userLogin.userName,
+                email: userLogin.email,
+                role: userLogin.role
+            }
         });
     } catch (error) {
-        console.error('Error during login:', error);
-        res.status(401).json({
-            error: 'Invalid credentials'
+        console.error('Error logging in:', error);
+        res.status(400).json({
+            error: error.message || 'Failed to login'
         });
     }
 };
