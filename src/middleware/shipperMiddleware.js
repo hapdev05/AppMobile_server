@@ -51,7 +51,8 @@ const checkShipper = async (req, res, next) => {
                 email: email,
                 role: userData.role,
                 uid: userData.firebaseUid,
-                idUser: userData.idUser
+                idUser: userData.idUser,
+                username: userData.userName
             };
             
             next();
