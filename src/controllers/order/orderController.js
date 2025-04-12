@@ -55,6 +55,8 @@ const createOrder = async (req, res) => {
             sender
         } = req.body;
 
+        const username = req.user.userName; // Lấy username từ thông tin người dùng đã xác thực
+
         // Validate required fields
         const missingFields = [];
         if (!orderName) missingFields.push('orderName');
@@ -107,6 +109,7 @@ const createOrder = async (req, res) => {
             price,
             recipient,
             sender,
+            username,
             status: 'pending',
             createdAt: new Date().toISOString()
         };
