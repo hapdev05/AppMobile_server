@@ -84,4 +84,41 @@ const deleteUser = async (req, res) => {
     }
 };
 
-export { getAllUsers, updateUserRole, deleteUser };
+// Lấy danh sách tất cả đơn hàng
+const getAllOrders = async (req, res) => {
+    try {
+        const { role } = req.user;
+        if (role !== 'admin') {
+            return res.status(403).json({
+                error: 'Permission denied. Admin access required.'
+            });
+        }
+
+        const ordersRef = db.ref('orders');
+        const snapshot = await ordersRef.once('value');
+        const orders = snapshot.val();
+
+        if (!orders) {
+            return res.status(404).json({
+                error: 'No orders found'
+            });
+        }
+
+        // Chuyển đổi object orders thành mảng và thêm orderId vào mỗi đơn hàng
+        const ordersArray = Object.entries(orders).map(([orderId, orderData]) => ({
+            orderId,
+            ...orderData
+        }));
+
+        res.status(200).json({
+            orders: ordersArray
+        });
+    } catch (error) {
+        console.error('Error getting orders:', error);
+        res.status(500).json({
+            error: error.message || 'Failed to get orders'
+        });
+    }
+};
+
+export { getAllUsers, updateUserRole, deleteUser, getAllOrders };

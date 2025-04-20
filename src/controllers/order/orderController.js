@@ -101,11 +101,17 @@ const createOrder = async (req, res) => {
             }
         }
 
+        // Chuyển đổi đường dẫn ảnh thành URL đầy đủ
+        const fullPhotos = savedPhotos.map(photo => 
+    
+            photo.startsWith('http') ? photo : `https://bf55-2001-ee0-4b4b-d9e0-7c49-b62c-bdac-7a16.ngrok-free.app/${photo}`
+        );
+
         const orderData = {
             orderId,
             description,
             orderName,
-            packagePhotos: savedPhotos,
+            packagePhotos: fullPhotos,
             price,
             recipient,
             sender,
