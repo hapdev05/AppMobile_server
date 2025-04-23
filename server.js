@@ -6,6 +6,7 @@ const app = express();
 import router from "./src/routes/auth/authRoutes.js";
 import routerAdmin from "./src/routes/admin/adminRoutes.js";
 import orderRoutes from "./src/routes/order/orderRoutes.js";
+import shipperRoutes from "./src/routes/shipper/shipperRoutes.js";
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
 app.use("/api", router );
 app.use("/api/admin", routerAdmin);
 app.use("/api/orders", orderRoutes);
+app.use("/api/shipper", shipperRoutes);
 
 // Set port and start server
 const PORT = process.env.PORT || 3000;

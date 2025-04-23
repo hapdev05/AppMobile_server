@@ -116,7 +116,7 @@ const createOrder = async (req, res) => {
             recipient,
             sender,
             username,
-            status: 'pending',
+            status: 'Chờ xác nhận',
             createdAt: new Date().toISOString()
         };
 
