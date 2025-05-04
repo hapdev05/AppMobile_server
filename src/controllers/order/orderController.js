@@ -72,7 +72,7 @@ const createOrder = async (req, res) => {
 
         // Validate recipient and sender information
         if (!recipient.name || !recipient.phone || !recipient.address ||
-            !sender.name || !sender.phone || !sender.address) {
+            !sender.name || !sender.phone || !sender.address ) {
             return res.status(400).json({
                 error: 'Missing recipient or sender information'
             });
@@ -104,7 +104,7 @@ const createOrder = async (req, res) => {
         // Chuyển đổi đường dẫn ảnh thành URL đầy đủ
         const fullPhotos = savedPhotos.map(photo => 
     
-            photo.startsWith('http') ? photo : `https://bf55-2001-ee0-4b4b-d9e0-7c49-b62c-bdac-7a16.ngrok-free.app/${photo}`
+            photo.startsWith('http') ? photo : `https://ab52-14-245-65-79.ngrok-free.app/${photo}`
         );
 
         const orderData = {
