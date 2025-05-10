@@ -1,4 +1,5 @@
 import userModel from '../models/auth/userModel.js';
+
 import { db } from '../config/firebase.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -14,7 +15,6 @@ const checkAdmin = async (req, res, next) => {
                 error: 'No authorization header'
             });
         }
-
         // Lấy token từ header
         const token = authHeader.split(' ')[1]; // Bearer TOKEN
         if (!token) {
