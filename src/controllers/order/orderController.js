@@ -104,7 +104,7 @@ const createOrder = async (req, res) => {
         // Chuyển đổi đường dẫn ảnh thành URL đầy đủ
         const fullPhotos = savedPhotos.map(photo => 
     
-            photo.startsWith('http') ? photo : `https://fa6e-2001-ee0-4b49-c580-bc32-ded9-8e98-e594.ngrok-free.app/${photo}`
+            photo.startsWith('http') ? photo : `https://605a-2001-ee0-4b49-c580-797a-942-f6d6-e6f2.ngrok-free.app/${photo}`
         );
 
         const orderData = {
